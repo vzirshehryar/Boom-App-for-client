@@ -11,13 +11,18 @@ import Success from "./_handleSuccess";
 
 const Page = async () => {
   const session = await auth();
+  console.log("auth is good: ", session)
   const stripeCustomerId = await createCustomerIfNull();
+  console.log("createCustomerIfNull is good: ", stripeCustomerId)
   const hasSub = await hasSubscription("" + stripeCustomerId);
+  console.log("hasSubscription is good: ", hasSub)
   const manageLink = await generateCustomerPortalLink("" + stripeCustomerId);
+  console.log("generateCustomerPortalLink is good: ", manageLink)
   const checkoutLink = await createCheckoutLink(
     "" + stripeCustomerId,
     session?.user?.trialClaimed,
   );
+  console.log("createCheckoutLink is good: ", checkoutLink)
 
   return (
     <div>
