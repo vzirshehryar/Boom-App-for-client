@@ -31,9 +31,10 @@ export async function createCheckoutLink(
     };
   }
 
+  const return_url = env.NEXTAUTH_URL[5] === '/' ? env.NEXTAUTH_URL : "https://" + env.NEXTAUTH_URL;
   const checkout = await stripe.checkout.sessions.create({
-    success_url: env.NEXTAUTH_URL + "/dashboard/subscription?success=true",
-    cancel_url: env.NEXTAUTH_URL + "/dashboard/subscription?canceled=true",
+    success_url: return_url + "/dashboard/subscription?success=true",
+    cancel_url: return_url + "/dashboard/subscription?canceled=true",
     customer: customer,
     line_items: [
       {
@@ -52,7 +53,6 @@ export async function createCheckoutLink(
 
 export async function generateCustomerPortalLink(customerId: string) {
   try {
-    console.log("env.NEXTAUTH_URL: ", env.NEXTAUTH_URL)
     const return_url = env.NEXTAUTH_URL[5] === '/' ? env.NEXTAUTH_URL : "https://" + env.NEXTAUTH_URL;
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: customerId,
