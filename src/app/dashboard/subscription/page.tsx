@@ -10,20 +10,14 @@ import { auth } from "@/server/auth";
 import Success from "./_handleSuccess";
 
 const Page = async () => {
-  try{
   const session = await auth();
-  console.log("auth is good: ", session)
     const stripeCustomerId = await createCustomerIfNull();
-  console.log("createCustomerIfNull is good: ", stripeCustomerId)
   const hasSub = await hasSubscription("" + stripeCustomerId);
-  console.log("hasSubscription is good: ", hasSub)
   const manageLink = await generateCustomerPortalLink("" + stripeCustomerId);
-  console.log("generateCustomerPortalLink is good: ", manageLink)
   const checkoutLink = await createCheckoutLink(
     "" + stripeCustomerId,
     session?.user?.trialClaimed,
   );
-  console.log("createCheckoutLink is good: ", checkoutLink)
 
   return (
     <div>
@@ -70,10 +64,6 @@ const Page = async () => {
       </div>
     </div>
   );
-  }catch(error){
-    console.log("Error is: ", error);
-    return <div>An Error Happened</div>
-  }
 };
 
 export default Page;
