@@ -52,6 +52,7 @@ export async function createCheckoutLink(
 
 export async function generateCustomerPortalLink(customerId: string) {
   try {
+    console.log("env.NEXTAUTH_URL: ", env.NEXTAUTH_URL)
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: customerId,
       return_url: env.NEXTAUTH_URL + "/dashboard/subscription",
