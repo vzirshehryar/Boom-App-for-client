@@ -11,11 +11,11 @@ const Sidebar = ({ hasSub }: { hasSub: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // if (!hasSub) {
-  //   if (!pathname.includes("/subscription")) {
-  //     redirect("/dashboard/subscription");
-  //   }
-  // }
+  if (!hasSub) {
+    if (!pathname.includes("/subscription")) {
+      redirect("/dashboard/subscription");
+    }
+  }
 
   return (
     <div
