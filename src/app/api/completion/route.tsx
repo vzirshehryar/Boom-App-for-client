@@ -1,3 +1,5 @@
+export const maxDuration = 60; // This function can run for a maximum of 5 seconds
+
 import { NextRequest, NextResponse } from "next/server";
 import { Propmts } from "@/libs/prompts";
 import { chunkOutlineByH2, generateImage, getCompletion, lowerTags } from "@/libs/utils";
