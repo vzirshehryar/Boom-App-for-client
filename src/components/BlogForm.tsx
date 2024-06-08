@@ -168,6 +168,7 @@ const BlogForm = ({ user }: { user: any }) => {
         title: titleValue,
         outline: outlineValue,
         apiKey: user.openaiApiKey,
+        generateImageIsTrue: generateImage,
         promptType: "blog",
       }),
     });
@@ -190,6 +191,7 @@ const BlogForm = ({ user }: { user: any }) => {
   const [outlineValue, setOutlineValue] = useState("");
   const [blogValue, setBlogValue] = useState("");
   const [titleValue, setTitleValue] = useState("");
+  const [generateImage, setGenerateImage] = useState(false);
 
   const handlePostWordPressBlog = async () => {
     if (!titleValue || !blogValue) {
@@ -360,10 +362,16 @@ const BlogForm = ({ user }: { user: any }) => {
           counterId={"outlinechars"}
         />
       </div>
-      <div className="mt-10 w-full ">
+      <div className="mt-10 w-full flex justify-between px-3">
+        <div className="flex gap-2 items-center">
+          <input className="w-[18px] h-[18px]" type="checkbox" id="generate-image" checked={generateImage} onChange={()=>setGenerateImage(!generateImage)}/>   
+          <label htmlFor="generate-image">
+            <p>Generate Images with blog</p>
+            </label>
+        </div>
         <button
           type="button"
-          className=" mx-auto flex items-center gap-4 rounded-xl bg-primary px-10 py-3 text-white disabled:cursor-not-allowed disabled:opacity-70"
+          className="flex items-center gap-4 rounded-xl bg-primary px-10 py-3 text-white disabled:cursor-not-allowed disabled:opacity-70"
           disabled={isLoading || isLoadingBlog || isPostingBlog}
           onClick={generateBlog}
         >

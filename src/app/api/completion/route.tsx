@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Propmts } from "@/libs/prompts";
-import { chunkOutlineByH2, getCompletion, lowerTags } from "@/libs/utils";
+import { chunkOutlineByH2, generateImage, getCompletion, lowerTags } from "@/libs/utils";
 import { db } from "@/server/db";
 import { auth } from "@/server/auth";
+import { type } from "os";
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -28,6 +30,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const session = await auth();
+
+    if(!session){
+      return NextResponse.json(
+        {
+          msg: `Please login to continue.`,
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
     const {
       topic,
       keywords,
@@ -40,6 +55,7 @@ export async function POST(request: NextRequest) {
       apiKey,
       title,
       outline,
+      generateImageIsTrue,
     } = body;
 
     if (body.promptType === "title") {
@@ -168,11 +184,21 @@ export async function POST(request: NextRequest) {
             targetAudience: audience,
             targetLocation: location,
           });
-          blog += await getCompletion(apiKey, blogBetween, model);
+           blog += await getCompletion(apiKey, blogBetween, model);
+
+          // generate image
+          if(generateImageIsTrue){
+            const h2Match = newOutline[i].match(/<h2>(.*?)<\/h2>/i);
+            if (h2Match) {
+              const h2Content = h2Match[1];
+              let imagePrompt = `Create a high-resolution colorfull image that represents ${h2Content}`;
+              const imageUrl = await generateImage(apiKey, imagePrompt, model);
+              blog += `<div style="display: flex; justify-content: center;"><img src="${imageUrl}" alt="${h2Content}"/></div>`;
+            }
+          }
+
         }
       }
-
-      const session = await auth();
 
       if (session) {
         await db.history.create({
@@ -190,6 +216,7 @@ export async function POST(request: NextRequest) {
             userId: session.user.id,
           },
         });
+        console.log("user created successfull 1111lsdjflakfjalkjfalksdjflsajfdlksjalksfj")
       }
 
       return NextResponse.json(
@@ -203,9 +230,10 @@ export async function POST(request: NextRequest) {
       );
     }
   } catch (error) {
+    console.log(error)
     return NextResponse.json(
       {
-        msg: `Something went wrong, please try again.`,
+        msg: `Something went wrong, please try again.${error?.error?.message}`,
       },
       {
         status: 500,

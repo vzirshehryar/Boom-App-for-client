@@ -11,11 +11,11 @@ const Sidebar = ({ hasSub }: { hasSub: boolean }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  if (!hasSub) {
-    if (!pathname.includes("/subscription")) {
-      redirect("/dashboard/subscription");
-    }
-  }
+  // if (!hasSub) {
+  //   if (!pathname.includes("/subscription")) {
+  //     redirect("/dashboard/subscription");
+  //   }
+  // }
 
   return (
     <div
@@ -24,7 +24,7 @@ const Sidebar = ({ hasSub }: { hasSub: boolean }) => {
     `}
     >
       <div className="flex w-full justify-between max-lg:pt-5 lg:mx-auto lg:w-max">
-        <h3 className="text-center ">Boom</h3>
+        <h3 className="text-center ">PenPulse AI</h3>
         <button className="lg:hidden" onClick={() => setIsOpen(!isOpen)}>
           <svg
             width="24"

@@ -13,9 +13,9 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata = {
-  title: "Content Boom",
+  title: "PenPulse AI",
   description: "Generate and Post Wordpress Blogs Easily",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  icons: [{ rel: "icon", url: "/PenPulse-AI-Logo.png" }],
 };
 
 export default function RootLayout({

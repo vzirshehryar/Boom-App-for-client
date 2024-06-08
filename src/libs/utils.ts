@@ -72,6 +72,21 @@ export const getCompletion = async (
   }
 };
 
+export const generateImage = async (apiKey: string,
+  prompt: string,
+  model: string,) => {
+  const openai = new OpenAI({
+      apiKey,
+    });
+  const response = await openai.images.generate({
+    prompt: prompt,
+    n: 1,
+    size: "512x512",
+  });
+  console.log(response.data)
+  return response.data[0].url;
+}
+
 export const convertMarkdownToHtml = async (markdown: string) => {
   if (!markdown) {
     return "";

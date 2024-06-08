@@ -73,7 +73,7 @@ const Page = () => {
 
   return (
     <div>
-      <h1 className="text-center text-3xl font-bold">Boom</h1>
+      <h1 className="text-center text-3xl font-bold">PenPulse AI</h1>
       <p className="my-5 text-center text-xl">Login to your account</p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>

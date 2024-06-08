@@ -46,7 +46,7 @@ export const toneOptions = [
   "Other",
 ];
 
-export const modelOptions = ["gpt-3.5-turbo", "gpt-4"];
+export const modelOptions = ["gpt-3.5-turbo", "gpt-4", "gpt-4o"];
 
 export const toolbarOptions = [
   [{ header: [1, 2, 3, 4, 5, 6, false] }],
