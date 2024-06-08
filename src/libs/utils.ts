@@ -78,12 +78,14 @@ export const generateImage = async (apiKey: string,
   const openai = new OpenAI({
       apiKey,
     });
+    console.log(prompt)
   const response = await openai.images.generate({
+    model: "dall-e-3",
     prompt: prompt,
     n: 1,
-    size: "512x512",
+    size: "1024x1024",
   });
-  console.log(response.data)
+  // console.log(response.data)
   return response.data[0].url;
 }
 
