@@ -11,20 +11,34 @@ import Success from "./_handleSuccess";
 
 const Page = async () => {
   const session = await auth();
-    const stripeCustomerId = await createCustomerIfNull();
+  const stripeCustomerId = await createCustomerIfNull();
   const hasSub = await hasSubscription("" + stripeCustomerId);
   const manageLink = await generateCustomerPortalLink("" + stripeCustomerId);
-  const checkoutLink = await createCheckoutLink(
+  const checkoutLinkSolo = await createCheckoutLink(
     "" + stripeCustomerId,
     session?.user?.trialClaimed,
+    "solo",
+    session?.user?.id,
+  );
+  const checkoutLinkFreelance = await createCheckoutLink(
+    "" + stripeCustomerId,
+    session?.user?.trialClaimed,
+    "freelancer",
+    session?.user?.id,
+  );
+  const checkoutLinkAgency = await createCheckoutLink(
+    "" + stripeCustomerId,
+    session?.user?.trialClaimed,
+    "agency",
+    session?.user?.id,
   );
 
   return (
     <div>
       <Success user={session?.user} />
       <div className="flex h-full flex-col items-center justify-center">
-        <div className="px-4 text-center lg:w-1/2">
-          {hasSub ? (
+        <div className="px-4 text-center">
+          {hasSub !== "inactive" ? (
             <>
               <h2 className="text-center">Thank you for Subscribing</h2>
 
@@ -52,12 +66,32 @@ const Page = async () => {
                   ? "To continue using our app, please subscribe to our plan. You can cancel anytime."
                   : "To continue using our app, please subscribe to our plan. We offer a one week  You can cancel anytime."}
               </h6>
+              <div className="mx-auto mt-10 flex flex-wrap justify-center gap-5">
+                <Link
+                  className="flex w-max rounded-xl bg-primary px-10 py-3 text-white"
+                  href={"" + checkoutLinkSolo}
+                >
+                  Subscribe for Solo Plan
+                </Link>{" "}
+                <Link
+                  className="flex w-max rounded-xl bg-primary px-10 py-3 text-white"
+                  href={"" + checkoutLinkFreelance}
+                >
+                  Subscribe for Freelancer Plan
+                </Link>{" "}
+                <Link
+                  className="flex w-max rounded-xl bg-primary px-10 py-3 text-white"
+                  href={"" + checkoutLinkAgency}
+                >
+                  Subscribe for Agency Plan
+                </Link>{" "}
+              </div>
               <Link
-                className="mx-auto mt-10 flex w-max rounded-xl bg-primary px-10 py-3 text-white"
-                href={"" + checkoutLink}
+                href={"https://penpulseai.com"}
+                className="mt-10 text-blue-400 underline"
               >
-                Subscribe Now
-              </Link>{" "}
+                Learn more about the Subscription Plans
+              </Link>
             </>
           )}
         </div>

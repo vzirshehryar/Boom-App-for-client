@@ -6,16 +6,16 @@ import { redirect, usePathname, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import toast from "./toast";
 
-const Sidebar = ({ hasSub }: { hasSub: boolean }) => {
+const Sidebar = ({ hasSub }: { hasSub: string }) => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // if (!hasSub) {
-  //   if (!pathname.includes("/subscription")) {
-  //     redirect("/dashboard/subscription");
-  //   }
-  // }
+  if (hasSub === "inactive") {
+    if (!pathname.includes("/subscription")) {
+      redirect("/dashboard/subscription");
+    }
+  }
 
   return (
     <div

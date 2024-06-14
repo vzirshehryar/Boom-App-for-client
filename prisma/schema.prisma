@@ -61,6 +61,7 @@ model User {
 
     stripeCustomerId String?
     trialClaimed      Boolean? @default(false)
+    plan        String?
 
     accounts      Account[]
     sessions      Session[]
