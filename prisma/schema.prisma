@@ -74,7 +74,7 @@ model UserToken {
     id        String   @id @default(cuid())
     userId    String
     type      String
-    token     String   @unique
+    token     String
     expires   DateTime
     user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

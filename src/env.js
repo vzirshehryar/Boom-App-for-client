@@ -25,6 +25,7 @@ export const env = createEnv({
       // VERCEL_URL doesn't include `https` so it cant be validated as a URL
       process.env.VERCEL ? z.string() : z.string().url(),
     ),
+    APP_DOMAIN: z.string(),
     GOOGLE_CLIENT_ID: z.string(),
     GOOGLE_CLIENT_SECRET: z.string(),
     CRYPTO_SECRET: z.string(),
@@ -35,6 +36,10 @@ export const env = createEnv({
     STRIPE_PRICE_ID_AGENCY_PLAN: z.string(),
     STRIPE_ALLOW_TRIAL: z.string().optional(),
     STRIPE_TRIAL_DAYS: z.string().optional(),
+    SMTP_EMAIL: z.string().optional(),
+    SMTP_PASSWORD: z.string().optional(),
+    SMTP_HOST: z.string().optional(),
+    SMTP_PORT: z.string().optional(),
   },
 
   /**
@@ -52,6 +57,7 @@ export const env = createEnv({
    */
   runtimeEnv: {
     // DATABASE_URL: process.env.DATABASE_URL,
+    APP_DOMAIN: process.env.APP_DOMAIN,
     NODE_ENV: process.env.NODE_ENV,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
@@ -65,6 +71,10 @@ export const env = createEnv({
     STRIPE_PRICE_ID_AGENCY_PLAN: process.env.STRIPE_PRICE_ID_AGENCY_PLAN,
     STRIPE_ALLOW_TRIAL: process.env.STRIPE_ALLOW_TRIAL,
     STRIPE_TRIAL_DAYS: process.env.STRIPE_TRIAL_DAYS,
+    SMTP_EMAIL: process.env.SMTP_EMAIL,
+    SMTP_PASSWORD: process.env.SMTP_PASSWORD,
+    SMTP_HOST: process.env.SMTP_HOST,
+    SMTP_PORT: process.env.SMTP_PORT,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

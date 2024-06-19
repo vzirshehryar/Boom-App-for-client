@@ -79,10 +79,10 @@ const Page = () => {
         title: resData.msg,
       });
       form.reset();
-      await signIn("credentials", {
-        email: values.email,
-        password: values.password,
-      });
+      // await signIn("credentials", {
+      //   email: values.email,
+      //   password: values.password,
+      // });
     } else {
       await toast({
         title: resData.msg,

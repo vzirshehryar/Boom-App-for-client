@@ -1,3 +1,5 @@
+import { env } from "@/env";
+import { sendEmail } from "@/libs/mailer";
 import { db } from "@/server/db";
 import bcrypt from "bcrypt";
 import { NextRequest, NextResponse } from "next/server";
@@ -62,6 +64,23 @@ export async function POST(request: NextRequest) {
         company,
       },
     });
+
+    const hashedToken = await bcrypt.hash(user.id.toString(), 10);
+
+    const token = await db.userToken.create({
+      data: {
+        userId: user.id,
+        type: "verify-email",
+        token: hashedToken,
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365), // 1 year for email verification token to expire
+      },
+    });
+
+    sendEmail(
+      user.email,
+      "Verify your email",
+      `<a href="${env.APP_DOMAIN}/verify-email?token=${token.token}">Verify your email</a>`,
+    );
 
     return NextResponse.json(
       {
