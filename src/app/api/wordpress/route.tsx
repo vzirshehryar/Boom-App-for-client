@@ -1,11 +1,12 @@
 import { auth } from "@/server/auth";
 import { db } from "@/server/db";
+import next from "next";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { websiteName,websiteLink, username, password } = body;
+    const { websiteName, websiteLink, username, password } = body;
 
     if (!websiteName || !websiteLink || !username || !password) {
       return NextResponse.json(
@@ -95,6 +96,65 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json(
       {
         msg: `Website deleted Successfully`,
+      },
+      {
+        status: 200,
+      },
+    );
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      {
+        msg: `Something went wrong.`,
+      },
+      {
+        status: 500,
+      },
+    );
+  }
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const userId = request.nextUrl.searchParams.get("user_id");
+
+    if (!userId) {
+      return NextResponse.json(
+        {
+          msg: `Id is required.`,
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    // get wordpress websites
+    const data = await db.wordpressWebsite.findMany({
+      where: {
+        userId: userId,
+      },
+      select: {
+        id: true,
+        websiteName: true,
+        websiteLink: true,
+      },
+    });
+
+    if (data.length === 0) {
+      return NextResponse.json(
+        {
+          msg: `No websites found.`,
+        },
+        {
+          status: 404,
+        },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        data: data,
       },
       {
         status: 200,

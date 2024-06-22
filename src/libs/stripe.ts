@@ -11,30 +11,25 @@ export async function hasSubscription(customer: string) {
   const subscriptions = await stripe.subscriptions.list({
     customer: customer,
   });
+  console.log(subscriptions);
   return subscriptions.data.length > 0
     ? subscriptions.data[0].status
     : "inactive";
 }
 
+export async function subscriptionDetails(customer: string) {
+  const subscriptions = await stripe.subscriptions.list({
+    customer: customer,
+  });
+  if (subscriptions.data.length > 0) return subscriptions.data[0];
+  return null;
+}
+
 export async function createCheckoutLink(
   customer: string,
-  trialClaimed: boolean,
   plan: "solo" | "freelancer" | "agency",
   userId: string,
 ) {
-  const trialAllowed = env.STRIPE_ALLOW_TRIAL === "true";
-  const trialDays = Number(env.STRIPE_TRIAL_DAYS || 7);
-
-  let subscriptionData: any = {};
-  if (trialAllowed && !trialClaimed && plan === "solo") {
-    subscriptionData["trial_period_days"] = trialDays;
-    subscriptionData["trial_settings"] = {
-      end_behavior: {
-        missing_payment_method: "cancel",
-      },
-    };
-  }
-
   const return_url =
     env.NEXTAUTH_URL[5] === "/"
       ? env.NEXTAUTH_URL
@@ -69,7 +64,6 @@ export async function createCheckoutLink(
       plan: plan,
       user_id: userId,
     },
-    subscription_data: subscriptionData,
     payment_method_collection: "if_required",
     mode: "subscription",
   });

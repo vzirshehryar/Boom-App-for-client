@@ -1,5 +1,3 @@
-import { env } from "@/env";
-import { auth } from "@/server/auth";
 import { db } from "@/server/db";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -16,13 +14,7 @@ export async function POST(request: NextRequest, res: NextResponse) {
           id: userId,
         },
         data: {
-          trialClaimed: true,
-          plan:
-            plan === env.STRIPE_PRICE_ID_SOLO_PLAN
-              ? "solo"
-              : plan === env.STRIPE_PRICE_ID_FREELANCE_PLAN
-                ? "freelancer"
-                : "agency",
+          plan: plan,
         },
       });
       return NextResponse.json(
@@ -34,60 +26,6 @@ export async function POST(request: NextRequest, res: NextResponse) {
         },
       );
     }
-    if (type === "customer.subscription.updated") {
-      const { customer, plan, status } = body.data.object;
-      await db.user.updateMany({
-        where: {
-          stripeCustomerId: customer,
-        },
-        data: {
-          trialClaimed: status === "trialing" ? true : false,
-          plan:
-            plan === env.STRIPE_PRICE_ID_SOLO_PLAN
-              ? "solo"
-              : plan === env.STRIPE_PRICE_ID_FREELANCE_PLAN
-                ? "freelancer"
-                : "agency",
-        },
-      });
-      return NextResponse.json(
-        {
-          msg: `Settings updated successfully.`,
-        },
-        {
-          status: 201,
-        },
-      );
-    }
-
-    const session = await auth();
-
-    const user = await db.user.findFirst({
-      where: {
-        id: session?.user.id,
-      },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        {
-          msg: `User not found.`,
-        },
-        {
-          status: 404,
-        },
-      );
-    }
-
-    // update user
-    await db.user.update({
-      where: {
-        id: user.id,
-      },
-      data: {
-        trialClaimed: true,
-      },
-    });
 
     return NextResponse.json(
       {

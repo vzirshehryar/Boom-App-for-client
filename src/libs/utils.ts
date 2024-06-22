@@ -72,13 +72,15 @@ export const getCompletion = async (
   }
 };
 
-export const generateImage = async (apiKey: string,
+export const generateImage = async (
+  apiKey: string,
   prompt: string,
-  model: string,) => {
+  model: string,
+) => {
   const openai = new OpenAI({
-      apiKey,
-    });
-    console.log(prompt)
+    apiKey,
+  });
+  console.log(prompt);
   const response = await openai.images.generate({
     model: "dall-e-3",
     prompt: prompt,
@@ -87,7 +89,7 @@ export const generateImage = async (apiKey: string,
   });
   // console.log(response.data)
   return response.data[0].url;
-}
+};
 
 export const convertMarkdownToHtml = async (markdown: string) => {
   if (!markdown) {
@@ -192,4 +194,50 @@ export const postWordPressBlog = async ({
       msg: error.message,
     };
   }
+};
+
+export const calculateDaysDifference = (dateString: string): number => {
+  // Parse the input date string
+  const givenDate = new Date(dateString);
+
+  // Check if the date is valid
+  if (isNaN(givenDate.getTime())) {
+    throw new Error("Invalid date format");
+  }
+
+  // Get the current date
+  const currentDate = new Date();
+
+  // Calculate the difference in time (milliseconds)
+  const timeDifference = currentDate.getTime() - givenDate.getTime();
+
+  // Convert the time difference from milliseconds to days
+  const dayDifference = timeDifference / (1000 * 3600 * 24);
+
+  // Return the day difference, rounded down to the nearest integer
+  return Math.floor(dayDifference);
+};
+
+export const getTheCurrentPlan = async (priceId: string) => {
+  let plan: "solo" | "freelancer" | "agency" = "solo";
+  switch (priceId) {
+    case CONSTANTS.STRIPE_PRICE_ID_SOLO_PLAN:
+      plan = "solo"; // Replace with your Basic plan price ID
+      break;
+    case CONSTANTS.STRIPE_PRICE_ID_FREELANCE_PLAN:
+      plan = "freelancer"; // Replace with your Standard plan price ID
+      break;
+    case CONSTANTS.STRIPE_PRICE_ID_AGENCY_PLAN:
+      plan = "agency"; // Replace with your Premium plan price ID
+      break;
+    default:
+      plan = "solo"; // Replace with your Basic plan price ID
+  }
+  return plan;
+};
+
+export const CONSTANTS = {
+  STRIPE_PRICE_ID_SOLO_PLAN: "price_1PTqLnHCHpH6CKxGl8HohZif",
+  STRIPE_PRICE_ID_FREELANCE_PLAN: "price_1PTqS5HCHpH6CKxGYEu8Q6q6",
+  STRIPE_PRICE_ID_AGENCY_PLAN: "price_1PTqT8HCHpH6CKxGWO97CHNZ",
 };

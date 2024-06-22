@@ -58,6 +58,7 @@ model User {
     openaiApiKey String?
     niche        String?
     country     String?
+    createdAt   DateTime @default(now())
 
     stripeCustomerId String?
     trialClaimed      Boolean? @default(false)

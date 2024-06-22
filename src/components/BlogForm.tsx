@@ -6,20 +6,77 @@ import { modelOptions, toneOptions } from "@/libs/config";
 import { useState, useMemo, useEffect } from "react";
 import toast from "@/components/toast";
 import { Icons } from "@/components/Icons";
-import { convertMarkdownToHtml, postWordPressBlog } from "@/libs/utils";
+import {
+  convertMarkdownToHtml,
+  getTheCurrentPlan,
+  postWordPressBlog,
+} from "@/libs/utils";
 import QuilEditor from "@/components/QuilEditor";
 import { useSearchParams } from "next/navigation";
 
-const BlogForm = ({ user }: { user: any }) => {
+type WordpressSiteType = {
+  id: string;
+  websiteName: string;
+  websiteLink: string;
+}[];
+
+const BlogForm = ({
+  user,
+  planPriceId,
+}: {
+  user: any;
+  planPriceId: null | string;
+}) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isLoadingBlog, setIsLoadingBlog] = useState<boolean>(false);
   const [isPostingBlog, setIsPostingBlog] = useState<boolean>(false);
   const [selectedWordpressWebsite, setSelectedWordpressWebsite] = useState("");
+  const [wordpressSites, setWordpressSites] = useState<string[]>([]);
+
   const searchParams = useSearchParams();
   useEffect(() => {
-    setSelectedWordpressWebsite(user.wordpressWebsites[0]?.websiteName);
-
     const id = searchParams.get("id");
+
+    const getPlan = async () => {
+      try {
+        const response: Response = await fetch(
+          `/api/wordpress?user_id=${user.id}`,
+        );
+        if (response.status === 404) {
+          throw new Error("No websites found.");
+        }
+        const data0: any = await response.json();
+        const data: WordpressSiteType = data0.data;
+        setSelectedWordpressWebsite(data[0].websiteName);
+        console.log(data, planPriceId);
+
+        if (planPriceId === null) {
+          setWordpressSites([data[0].websiteName]);
+        } else {
+          const sites: string[] = [];
+          const plan = await getTheCurrentPlan(planPriceId);
+          if (plan === "solo") {
+            setWordpressSites([data[0].websiteName]);
+          } else if (plan === "freelancer") {
+            for (let i = 0; i < data.length; i++) {
+              if (i < 5) sites.push(data[i].websiteName);
+              else break;
+            }
+          } else if (plan === "agency") {
+            const sites = [];
+            for (let i = 0; i < data.length; i++) {
+              if (i < 15) sites.push(data[i].websiteName);
+              else break;
+            }
+          }
+          setWordpressSites(sites);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getPlan();
 
     const fetchHistory = async () => {
       const res = await fetch(`/api/history`, {
@@ -362,12 +419,18 @@ const BlogForm = ({ user }: { user: any }) => {
           counterId={"outlinechars"}
         />
       </div>
-      <div className="mt-10 w-full flex justify-between px-3">
-        <div className="flex gap-2 items-center">
-          <input className="w-[18px] h-[18px]" type="checkbox" id="generate-image" checked={generateImage} onChange={()=>setGenerateImage(!generateImage)}/>   
+      <div className="mt-10 flex w-full justify-between px-3">
+        <div className="flex items-center gap-2">
+          <input
+            className="h-[18px] w-[18px]"
+            type="checkbox"
+            id="generate-image"
+            checked={generateImage}
+            onChange={() => setGenerateImage(!generateImage)}
+          />
           <label htmlFor="generate-image">
             <p>Generate Images with blog</p>
-            </label>
+          </label>
         </div>
         <button
           type="button"
@@ -395,9 +458,7 @@ const BlogForm = ({ user }: { user: any }) => {
             Select Website
           </label>
           <Select
-            options={user.wordpressWebsites.map(
-              (site: any) => site.websiteName,
-            )}
+            options={wordpressSites}
             onChange={(e) => setSelectedWordpressWebsite(e.target.value)}
             defaultValue={selectedWordpressWebsite}
             name="wordpressWebsites"

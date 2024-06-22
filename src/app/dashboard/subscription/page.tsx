@@ -7,7 +7,6 @@ import {
 } from "@/libs/stripe";
 import Link from "next/link";
 import { auth } from "@/server/auth";
-import Success from "./_handleSuccess";
 
 const Page = async () => {
   const session = await auth();
@@ -16,26 +15,22 @@ const Page = async () => {
   const manageLink = await generateCustomerPortalLink("" + stripeCustomerId);
   const checkoutLinkSolo = await createCheckoutLink(
     "" + stripeCustomerId,
-    session?.user?.trialClaimed,
     "solo",
     session?.user?.id,
   );
   const checkoutLinkFreelance = await createCheckoutLink(
     "" + stripeCustomerId,
-    session?.user?.trialClaimed,
     "freelancer",
     session?.user?.id,
   );
   const checkoutLinkAgency = await createCheckoutLink(
     "" + stripeCustomerId,
-    session?.user?.trialClaimed,
     "agency",
     session?.user?.id,
   );
 
   return (
     <div>
-      <Success user={session?.user} />
       <div className="flex h-full flex-col items-center justify-center">
         <div className="px-4 text-center">
           {hasSub !== "inactive" ? (

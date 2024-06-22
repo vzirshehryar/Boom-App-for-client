@@ -115,10 +115,25 @@ export const authOptions: NextAuthOptions = {
       });
 
       if (!dbUser) {
-        if (user) {
-          token.id = user?.id;
-        }
-        return token;
+        const newUser = await db.user.create({
+          data: {
+            email: user.email,
+            emailVerified: new Date(),
+          },
+          include: { WordpressWebsite: true },
+        });
+
+        return {
+          id: newUser.id,
+          name: newUser.name,
+          email: newUser.email,
+          picture: newUser.image,
+          wordpressWebsites: newUser.WordpressWebsite,
+          openaiApiKey: decrypt(newUser.openaiApiKey),
+          stripeCustomerId: newUser.stripeCustomerId,
+          trialClaimed: newUser.trialClaimed,
+          createdAt: newUser.createdAt,
+        };
       }
 
       return {
@@ -130,6 +145,7 @@ export const authOptions: NextAuthOptions = {
         openaiApiKey: decrypt(dbUser.openaiApiKey),
         stripeCustomerId: dbUser.stripeCustomerId,
         trialClaimed: dbUser.trialClaimed,
+        createdAt: dbUser.createdAt,
       };
     },
   },
