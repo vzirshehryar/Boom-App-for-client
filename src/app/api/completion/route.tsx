@@ -2,7 +2,12 @@ export const maxDuration = 60; // This function can run for a maximum of 5 secon
 
 import { NextRequest, NextResponse } from "next/server";
 import { Propmts } from "@/libs/prompts";
-import { chunkOutlineByH2, generateImage, getCompletion, lowerTags } from "@/libs/utils";
+import {
+  chunkOutlineByH2,
+  generateImage,
+  getCompletion,
+  lowerTags,
+} from "@/libs/utils";
 import { db } from "@/server/db";
 import { auth } from "@/server/auth";
 import { type } from "os";
@@ -34,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     const session = await auth();
 
-    if(!session){
+    if (!session) {
       return NextResponse.json(
         {
           msg: `Please login to continue.`,
@@ -94,7 +99,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           msg: `Title Generated.`,
-          data: title.replace(/"/g, "")
+          data: title.replace(/"/g, ""),
         },
         {
           status: 201,
@@ -159,19 +164,21 @@ export async function POST(request: NextRequest) {
         );
       }
 
+      let blog = "";
+      blog += `<h1>${title}</h1>`;
+      let imagePromptForTitle = `Create a high-resolution image that represents ${title}`;
+      const imageUrlForTitle = await generateImage(
+        apiKey,
+        imagePromptForTitle,
+        model,
+      );
+      blog += `<div style="display: flex; justify-content: center;"><img src="${imageUrlForTitle}" alt="${title}"/></div>`;
+
       let newOutline = outline.replace(/(<\/?[^!][^>]+)/g, lowerTags);
       newOutline = chunkOutlineByH2(newOutline);
-      let blog = "";
+      let countOfH2 = 1;
       for (let i = 0; i < newOutline.length; i++) {
-        if (i === 0) {
-          const blogFirstParagraph = Propmts.blogFirstParagraph({
-            title,
-            outline: newOutline[i],
-            language,
-          });
-          const part = await getCompletion(apiKey, blogFirstParagraph, model);
-          blog += part;
-        } else if (i === newOutline.length - 1) {
+        if (i === newOutline.length - 1) {
           const blogLastParagraph = Propmts.blogLastParagraph({
             title,
             outline: newOutline[i],
@@ -186,19 +193,19 @@ export async function POST(request: NextRequest) {
             targetAudience: audience,
             targetLocation: location,
           });
-           blog += await getCompletion(apiKey, blogBetween, model);
+          blog += await getCompletion(apiKey, blogBetween, model);
 
           // generate image
-          if(generateImageIsTrue){
+          if (generateImageIsTrue && countOfH2 % 2 === 0) {
             const h2Match = newOutline[i].match(/<h2>(.*?)<\/h2>/i);
             if (h2Match) {
               const h2Content = h2Match[1];
-              let imagePrompt = `Create a high-resolution colorfull image that represents ${h2Content}`;
+              let imagePrompt = `Create a high-resolution image that represents ${h2Content}`;
               const imageUrl = await generateImage(apiKey, imagePrompt, model);
               blog += `<div style="display: flex; justify-content: center;"><img src="${imageUrl}" alt="${h2Content}"/></div>`;
             }
           }
-
+          countOfH2++;
         }
       }
 
@@ -218,7 +225,9 @@ export async function POST(request: NextRequest) {
             userId: session.user.id,
           },
         });
-        console.log("user created successfull 1111lsdjflakfjalkjfalksdjflsajfdlksjalksfj")
+        console.log(
+          "user created successfull 1111lsdjflakfjalkjfalksdjflsajfdlksjalksfj",
+        );
       }
 
       return NextResponse.json(
@@ -232,7 +241,7 @@ export async function POST(request: NextRequest) {
       );
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return NextResponse.json(
       {
         msg: `Something went wrong, please try again.${error?.error?.message}`,

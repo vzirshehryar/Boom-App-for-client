@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
 export const sendEmail = async (to: string, subject: string, html: string) => {
   try {
     await transporter.sendMail({
-      from: env.SMTP_EMAIL,
+      from: `"PenPulse AI" <${env.SMTP_EMAIL}>`,
       to,
       subject,
       html,

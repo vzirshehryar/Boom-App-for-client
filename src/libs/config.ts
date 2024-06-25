@@ -5,7 +5,7 @@ export const navLinks = [
   },
   {
     href: "/dashboard/blog",
-    label: "Short Blogs",
+    label: "Write Articles",
   },
 ];
 export const settingsLinks = [

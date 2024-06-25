@@ -13,8 +13,8 @@ const SettingsForm = ({ user }: { user: any }) => {
   });
   const [formData, setFormData] = useState({
     openaiApiKey: user.openaiApiKey,
-    niche: user.niche,
-    country: user.country,
+    // niche: user.niche,
+    // country: user.country,
   });
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -134,22 +134,17 @@ const SettingsForm = ({ user }: { user: any }) => {
         </div>
         {/* End Right Content */}
       </div>
-      <div className="flex gap-x-10 max-lg:flex-col">
-        {/* Left Content */}
+      {/*<div className="flex gap-x-10 max-lg:flex-col">
         <div className="flex-shrink-0 text-sm  lg:w-32 lg:text-end  ">
           <label htmlFor="email" className="text-muted">
             Niche
           </label>
         </div>
-        {/* End Left Content */}
-        {/* Icon */}
         <div className="relative after:absolute after:bottom-0 after:start-3.5 after:top-7 after:w-px after:-translate-x-[0.5px] after:bg-gray-200 last:after:hidden max-lg:hidden dark:after:bg-gray-700">
           <div className="relative z-10 flex size-7 items-center justify-center">
             <div className="size-2 rounded-full bg-gray-400 dark:bg-gray-600" />
           </div>
         </div>
-        {/* End Icon */}
-        {/* Right Content */}
         <div className="grow pb-8 pt-0.5 max-lg:mt-2">
           <div className="flex-1 lg:max-w-[600px]">
             <Input
@@ -161,24 +156,18 @@ const SettingsForm = ({ user }: { user: any }) => {
             />
           </div>
         </div>
-        {/* End Right Content */}
       </div>
       <div className="flex gap-x-10 max-lg:flex-col">
-        {/* Left Content */}
         <div className="flex-shrink-0 text-sm  lg:w-32 lg:text-end  ">
           <label htmlFor="email" className="text-muted">
             Target Country
           </label>
         </div>
-        {/* End Left Content */}
-        {/* Icon */}
         <div className="relative after:absolute after:bottom-0 after:start-3.5 after:top-7 after:w-px after:-translate-x-[0.5px] after:bg-gray-200 last:after:hidden max-lg:hidden dark:after:bg-gray-700">
           <div className="relative z-10 flex size-7 items-center justify-center">
             <div className="size-2 rounded-full bg-gray-400 dark:bg-gray-600" />
           </div>
         </div>
-        {/* End Icon */}
-        {/* Right Content */}
         <div className="grow pb-8 pt-0.5 max-lg:mt-2">
           <div className="flex-1 lg:max-w-[600px]">
             <Input
@@ -190,8 +179,7 @@ const SettingsForm = ({ user }: { user: any }) => {
             />
           </div>
         </div>
-        {/* End Right Content */}
-      </div>
+      </div>*/}
 
       <div className="mt-10 ">
         <button

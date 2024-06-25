@@ -7,12 +7,15 @@ import {
 } from "@/libs/stripe";
 import Link from "next/link";
 import { auth } from "@/server/auth";
+import { calculateDaysDifference } from "@/libs/utils";
 
 const Page = async () => {
   const session = await auth();
   const stripeCustomerId = await createCustomerIfNull();
   const hasSub = await hasSubscription("" + stripeCustomerId);
   const manageLink = await generateCustomerPortalLink("" + stripeCustomerId);
+  // @ts-ignore
+  const days = calculateDaysDifference(session.user.createdAt);
   const checkoutLinkSolo = await createCheckoutLink(
     "" + stripeCustomerId,
     "solo",
@@ -59,7 +62,9 @@ const Page = async () => {
               <h6 className="mt-11 text-slate-300 ">
                 {session?.user?.trialClaimed
                   ? "To continue using our app, please subscribe to our plan. You can cancel anytime."
-                  : "To continue using our app, please subscribe to our plan. We offer a one week  You can cancel anytime."}
+                  : "Your One week trial has started. Enjoy the app. Your trial will end in " +
+                    (7 - days) +
+                    " days."}
               </h6>
               <div className="mx-auto mt-10 flex flex-wrap justify-center gap-5">
                 <Link

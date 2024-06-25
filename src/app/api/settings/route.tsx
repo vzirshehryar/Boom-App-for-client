@@ -7,8 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { openaiApiKey, niche, country } =
-      body;
+    const { openaiApiKey, niche, country } = body;
 
     if (!openaiApiKey) {
       return NextResponse.json(
@@ -38,18 +37,17 @@ export async function POST(request: NextRequest) {
         },
       );
     }
+    // @ts-ignore
+    session.user.openaiApiKey = openaiApiKey;
 
     const data = {
       openaiApiKey: user.openaiApiKey,
-      niche,
-      country,
     };
 
     const encryptedOpenaiApiKey = CryptoJS.AES.encrypt(
       openaiApiKey,
       env.CRYPTO_SECRET,
     ).toString();
-
 
     if (encryptedOpenaiApiKey !== user.openaiApiKey) {
       data.openaiApiKey = encryptedOpenaiApiKey;
