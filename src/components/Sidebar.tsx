@@ -85,7 +85,10 @@ const Sidebar = ({
           ))}
           <li>
             <button
-              onClick={() => signOut({ callbackUrl: "/" })}
+              onClick={() => {
+                localStorage.removeItem("again");
+                signOut({ callbackUrl: "/" });
+              }}
               className={`relative pl-5  text-muted transition-colors before:absolute before:left-2 before:h-full before:w-px  before:bg-foreground before:opacity-0 before:transition-colors hover:text-foreground  hover:before:opacity-100`}
             >
               Sign out

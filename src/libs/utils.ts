@@ -5,6 +5,8 @@ import { marked } from "marked";
 import DOMPurify from "dompurify";
 import { env } from "@/env";
 import * as CryptoJS from "crypto-js";
+const axios = require("axios");
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -89,6 +91,51 @@ export const generateImage = async (
   });
   // console.log(response.data)
   return response.data[0].url;
+};
+
+export const storeImageToS3AndGetItLink = async (
+  imageUrl: string,
+  h2: string,
+  bucketName: string,
+  vultrEndpoint: string,
+  vultrAccessKeyId: string,
+  vultrSecretAccessKey: string,
+) => {
+  const imageResponse = await axios.get(imageUrl, {
+    responseType: "arraybuffer",
+  });
+  // console.log(`Image downloaded: ${imageResponse.data}`);
+  const imageName = `${h2}${Date.now()}.png`;
+  console.log(`Image name: ${imageName}`);
+
+  // Initialize the S3 client for Vultr Object Storage
+  const s3Client = new S3Client({
+    endpoint: "https://" + vultrEndpoint,
+    region: "us-east-1", // Vultr Object Storage is regionless, but you can use any value here
+    credentials: {
+      accessKeyId: vultrAccessKeyId,
+      secretAccessKey: vultrSecretAccessKey,
+    },
+  });
+
+  // Prepare the upload parameters
+  const uploadParams = {
+    Bucket: bucketName,
+    Key: imageName,
+    Body: imageResponse.data,
+    ContentType: "image/png",
+    ACL: "public-read",
+  };
+
+  try {
+    // Upload the image to Vultr Object Storage
+    await s3Client.send(new PutObjectCommand(uploadParams));
+    console.log(`Image uploaded to Vultr Object Storage: ${uploadParams.Key}`);
+    return `https://${env.S3_HOSTNAME}/${env.S3_BUCKET_NAME}/${imageName}`;
+  } catch (err) {
+    console.error("Error uploading image to Vultr Object Storage", err);
+    throw new Error("Error uploading image to Vultr Object Storage");
+  }
 };
 
 export const convertMarkdownToHtml = async (markdown: string) => {

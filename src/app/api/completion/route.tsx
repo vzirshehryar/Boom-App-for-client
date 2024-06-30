@@ -7,10 +7,12 @@ import {
   generateImage,
   getCompletion,
   lowerTags,
+  storeImageToS3AndGetItLink,
 } from "@/libs/utils";
 import { db } from "@/server/db";
 import { auth } from "@/server/auth";
 import { type } from "os";
+import { env } from "@/env";
 
 export async function POST(request: NextRequest) {
   try {
@@ -172,7 +174,16 @@ export async function POST(request: NextRequest) {
         imagePromptForTitle,
         model,
       );
-      blog += `<div style="display: flex; justify-content: center;"><img src="${imageUrlForTitle}" alt="${title}"/></div>`;
+      const newImageUrl = await storeImageToS3AndGetItLink(
+        imageUrlForTitle,
+        title as string,
+        env.S3_BUCKET_NAME,
+        env.S3_HOSTNAME,
+        env.S3_ACCESS_KEY,
+        env.S3_SECRET_KEY,
+      );
+      console.log("newImageUrl", newImageUrl);
+      blog += `<div style="display: flex; justify-content: center;"><img src="${newImageUrl}" alt="${title}"/></div>`;
 
       let newOutline = outline.replace(/(<\/?[^!][^>]+)/g, lowerTags);
       newOutline = chunkOutlineByH2(newOutline);
@@ -202,7 +213,15 @@ export async function POST(request: NextRequest) {
               const h2Content = h2Match[1];
               let imagePrompt = `Create a high-resolution image that represents ${h2Content}`;
               const imageUrl = await generateImage(apiKey, imagePrompt, model);
-              blog += `<div style="display: flex; justify-content: center;"><img src="${imageUrl}" alt="${h2Content}"/></div>`;
+              const newImageUrl = await storeImageToS3AndGetItLink(
+                imageUrl,
+                h2Content as string,
+                env.S3_BUCKET_NAME,
+                env.S3_HOSTNAME,
+                env.S3_ACCESS_KEY,
+                env.S3_SECRET_KEY,
+              );
+              blog += `<div style="display: flex; justify-content: center;"><img src="${newImageUrl}" alt="${h2Content}"/></div>`;
             }
           }
           countOfH2++;
